@@ -1,5 +1,5 @@
-import { initMap } from "./map.js";
-import { earthquakeEffect } from "./earthquake.js";
+import { initMap } from "js/map.js";
+import { earthquakeEffect } from "js/earthquake.js";
 
 let monster = null;
 const MONSTER_TYPES = {
