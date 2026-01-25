@@ -1,0 +1,16 @@
+export let monster = null;
+export const SIZE = 16;
+export let money = 2500;
+export let food = 1000;
+export let population = 0;
+export let turn = 0;
+export let achievementPoints = 0;
+export let tutorialMissions = { '01': false, '02': false, '03': false, '04': false, '05': false, '06': false, '07': false, '08': false };
+export let map = [];
+export let selectedX = null, selectedY = null;
+export let actionQueue = [];
+export let islandName = "MyIsland";
+export let warships = []; // 軍艦の配列を追加
+
+export function setMoney(value){ money = value; }
+export function changeMoney(value){ money += value; }
