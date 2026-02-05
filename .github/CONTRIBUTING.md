@@ -107,6 +107,21 @@ Translation contributors may also be credited in-game if the translation is incl
 
 ---
 
+## ⏰ Maintainer Availability
+
+This project is maintained in my free time, so response speed may vary.
+
+🕒 I am most active on GitHub during:
+**14:00–17:00 (Japan Standard Time, UTC+9)**
+
+- I usually check GitHub at least once per day  
+- Most issues and pull requests are reviewed within 1–3 days  
+- Responses may be slower during busy school periods
+
+Even if I don't reply right away, feel free to comment again — I appreciate your contribution and patience!
+
+---
+
 ### 🔚 Final Note
 
 Thank you for helping improve this game.
