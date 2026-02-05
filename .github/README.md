@@ -1,12 +1,9 @@
 # MSR式箱庭ゲーム Ver.4.6
 
-大規模改装中です。
+## Overview
 
-プレイする際は[こちら](https://github.com/masaru-star/Island-development.github.io/releases/tag/Ver.4)からダウンロードしてください。
-## 概要
-
-本作品は、島の知事として地形を整え、施設を建設し、人口を増やしながら島を発展させていく経営シミュレーションゲームです。
-他島との交流や、突如現れる怪獣との戦い、数々の災害を乗り越え、自分だけの理想の島を作り上げましょう。
+This is a management simulation game in which you take on the role of island governor and develop your island by shaping the terrain, constructing facilities, and increasing the population. 
+Interact with other islands, battle monsters that suddenly appear, and overcome numerous disasters as you build your own ideal island.
 
 ## 基本システム
 
