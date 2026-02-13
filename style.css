@@ -10,6 +10,7 @@ td {
 .selected {
   outline: 4px solid gray;
   outline-offset: -1px;
+  border: 2px solid gray !important;
 }
 .action-link {
   cursor: pointer;
@@ -35,9 +36,6 @@ td {
 .warship { background: linear-gradient(#66b3ff, #4682B4); }
 .warship-dispatched { background-color: #002f5f; color: #fff; }
 .warship-wreckage { background-color: #333; color: #ccc; }
-.selected {
-    border: 2px solid gray !important;
-  }
   .log-red {
     color: red;
   }
