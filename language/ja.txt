@@ -239,7 +239,6 @@ logAction(`${monsterType.name} が (${x},${y}) の海を埋め立てようとし
 logAction(`軍艦 ${targetWarship.name} は撃沈しました！`);
 logAction(`${monsterType.name} が (${x},${y}) の海を荒地に変えました！`);
 logAction(`${monsterType.name} が (${x},${y}) の${facilityName}を海に変えました！`);
-logAction(logMsg);
 logAction('資金不足により維持が困難になっています！');
 logAction(`資金収支: ${moneyChange + totalOilRigIncome - actualMaintenanceCost}G, 食料: ${foodChange >= 0 ? '+' : ''}${foodChange}, 人口変化: ${populationChange >= 0 ? '+' : ''}${populationChange}`);
 logAction(`(${x},${y})の住宅が地震により破壊されました。`);
