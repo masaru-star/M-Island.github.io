@@ -1,5 +1,5 @@
 /*
- * M-Island Console Auto Optimizer (CheatScript)
+ * M-Island Console Auto Optimizer
  * 使い方:
  * 1) ブラウザの開発者ツールのコンソールでこのファイル内容を貼り付ける
  * 2) AutoOptimizer.run(50) のように実行する
