@@ -419,10 +419,16 @@ window.updateConfirmButton = function () {
   } else if (action === 'dig') {
     document.getElementById('oilDrillFactor').style.display = 'inline-block';
   }
+  renderMap();
 }
 function renderMap() {
   const table = document.getElementById('map');
   table.innerHTML = '';
+  const selectedAction = document.getElementById('actionSelect') ? document.getElementById('actionSelect').value : '';
+  let previewRange = -1;
+  if (selectedAction === 'ppBombard') previewRange = 0;
+  if (selectedAction === 'bombard') previewRange = 1;
+  if (selectedAction === 'spreadBombard') previewRange = 2;
   for (let y = 0; y < SIZE; y++) {
     const row = document.createElement('tr');
     for (let x = 0; x < SIZE; x++) {
@@ -478,6 +484,9 @@ function renderMap() {
           if (tile.facility === 'oilRig') cell.textContent = '🛢️';
       }
 
+      if (previewRange >= 0 && selectedX !== null && selectedY !== null && Math.abs(x - selectedX) <= previewRange && Math.abs(y - selectedY) <= previewRange) {
+        cell.classList.add('target-preview-red');
+      }
       if (selectedX === x && selectedY === y) cell.classList.add('selected');
       cell.onmouseover = () => showTileInfo(x, y);
       cell.onclick = () => selectTile(x, y);
@@ -1684,6 +1693,7 @@ turn++;
                               // その後、PP弾の効果を適用（既存の攻撃ロジックに流れる）
                           } else { // PP弾でなければ防衛施設が守る
                               logAction(`砲撃は防衛施設により無効化されました (${tx},${ty})`);
+                              turnTileEffects.push({ x: tx, y: ty, type: 'blue' });
                               continue; // 次の攻撃へ
                           }
                       }
@@ -2141,6 +2151,7 @@ const newWarship = {
                 } else { // PP弾でなければ防衛施設が守る
                     renderMap();
                     logAction(`砲撃は防衛施設により無効化されました (${tx},${ty})`);
+                    turnTileEffects.push({ x: tx, y: ty, type: 'blue' });
                     continue; // 次の攻撃へ
                 }
             }
