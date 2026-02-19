@@ -214,6 +214,59 @@ function checkAndCompleteMission(missionId, pt, foodReward, moneyReward, checkFu
 let myIslandState = null; // 自分の島の状態を保存する変数
 let isViewingOtherIsland = false; // 他の島を見ているかどうかのフラグ
 
+function cloneMapStateForEffects() {
+  return map.map(row => row.map(tile => ({
+    terrain: tile.terrain,
+    facility: tile.facility,
+    pop: tile.pop || 0,
+    enhanced: !!tile.enhanced,
+    monumentLevel: tile.MonumentLevel || 0
+  })));
+}
+
+function collectTurnTileEffects(beforeMap, afterMap) {
+  const effects = [];
+  for (let y = 0; y < SIZE; y++) {
+    for (let x = 0; x < SIZE; x++) {
+      const beforeTile = beforeMap[y][x];
+      const afterTile = afterMap[y][x];
+
+      if (beforeTile.terrain !== 'waste' && afterTile.terrain === 'waste') {
+        effects.push({ x, y, type: 'waste' });
+      }
+
+      if (beforeTile.terrain !== 'sea' && afterTile.terrain === 'sea') {
+        effects.push({ x, y, type: 'waste' });
+      }
+
+      if (beforeTile.terrain === 'waste' && afterTile.terrain === 'plain') {
+        effects.push({ x, y, type: 'green' });
+      }
+
+      if (beforeTile.terrain === 'plain' && beforeTile.facility === null && afterTile.facility !== null) {
+        effects.push({ x, y, type: 'green' });
+      }
+
+      if (beforeTile.facility && afterTile.facility && beforeTile.facility !== afterTile.facility) {
+        effects.push({ x, y, type: 'green' });
+      }
+
+      if (!beforeTile.enhanced && afterTile.enhanced) {
+        effects.push({ x, y, type: 'green' });
+      }
+
+      if (beforeTile.facility === 'Monument' && afterTile.facility === 'Monument' && afterTile.monumentLevel > beforeTile.monumentLevel) {
+        effects.push({ x, y, type: 'green' });
+      }
+
+      if (beforeTile.facility === 'house' && afterTile.facility === 'house' && afterTile.pop > beforeTile.pop) {
+        effects.push({ x, y, type: 'yellow' });
+      }
+    }
+  }
+  return effects;
+}
+
 function randTerrain() {
   const r = Math.random();
   // 海が生成される確率も加える
@@ -393,15 +446,23 @@ window.updateConfirmButton = function () {
   } else if (action === 'dig') {
     document.getElementById('oilDrillFactor').style.display = 'inline-block';
   }
+  renderMap();
 }
 function renderMap() {
   const table = document.getElementById('map');
   table.innerHTML = '';
+  const selectedAction = document.getElementById('actionSelect') ? document.getElementById('actionSelect').value : '';
+  let previewRange = -1;
+  if (selectedAction === 'ppBombard') previewRange = 0;
+  if (selectedAction === 'bombard') previewRange = 1;
+  if (selectedAction === 'spreadBombard') previewRange = 2;
   for (let y = 0; y < SIZE; y++) {
     const row = document.createElement('tr');
     for (let x = 0; x < SIZE; x++) {
       const cell = document.createElement('td');
       const tile = map[y][x];
+      cell.dataset.x = x;
+      cell.dataset.y = y;
 
       // 他の島を見ているときは砲台と防衛施設を森に偽装
       const displayFacility = (isViewingOtherIsland && (tile.facility === 'gun' || tile.facility === 'defenseFacility' || tile.facility === 'Monument')) ? 'forest' : tile.facility;
@@ -450,6 +511,9 @@ function renderMap() {
           if (tile.facility === 'oilRig') cell.textContent = '🛢️';
       }
 
+      if (previewRange >= 0 && selectedX !== null && selectedY !== null && Math.abs(x - selectedX) <= previewRange && Math.abs(y - selectedY) <= previewRange) {
+        cell.classList.add('target-preview-red');
+      }
       if (selectedX === x && selectedY === y) cell.classList.add('selected');
       cell.onmouseover = () => showTileInfo(x, y);
       cell.onclick = () => selectTile(x, y);
@@ -1562,6 +1626,8 @@ if (!keepOptionSelected) {
 
 // nextTurn関数をグローバルスコープで定義
 window.nextTurn = function () {
+const mapStateBeforeTurn = cloneMapStateForEffects();
+const turnTileEffects = [];
 turn++;
     warships.forEach(warship => {
         if (warship.currentDurability <= 0) return;
@@ -1655,6 +1721,7 @@ turn++;
                               // その後、PP弾の効果を適用（既存の攻撃ロジックに流れる）
                           } else { // PP弾でなければ防衛施設が守る
                               logAction(`砲撃は防衛施設により無効化されました (${tx},${ty})`);
+                              turnTileEffects.push({ x: tx, y: ty, type: 'blue' });
                               continue; // 次の攻撃へ
                           }
                       }
@@ -2112,6 +2179,7 @@ const newWarship = {
                 } else { // PP弾でなければ防衛施設が守る
                     renderMap();
                     logAction(`砲撃は防衛施設により無効化されました (${tx},${ty})`);
+                    turnTileEffects.push({ x: tx, y: ty, type: 'blue' });
                     continue; // 次の攻撃へ
                 }
             }
@@ -2989,7 +3057,11 @@ if (actualMaintenanceCost > 0) {
   renderActionQueue()
   const populationChange = population - prevPopulation; // 人口の増減を計算
   logAction(`資金収支: ${moneyChange+totalOilRigIncome - actualMaintenanceCost}G, 食料: ${foodChange >= 0 ? '+' : ''}${foodChange}, 人口変化: ${populationChange >= 0 ? '+' : ''}${populationChange}`);
+  const mapDiffEffects = collectTurnTileEffects(mapStateBeforeTurn, map);
   renderMap();
+  if (window.playTileEffects) {
+    window.playTileEffects(turnTileEffects.concat(mapDiffEffects));
+  }
 }
 /**
  * 地震・津波の効果を処理する
