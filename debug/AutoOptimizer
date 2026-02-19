@@ -5,23 +5,18 @@
  * 2) AutoOptimizer.run(50) のように実行する
  * 3) 停止したい場合は AutoOptimizer.stop()
  */
-
 (() => {
   'use strict';
-
   const ACTION_SELECT_ID = 'actionSelect';
   const GUN_COST = 1200;
   const DEFENSE_COST = 5000;
   const LANDFILL_COST = 600;
   const MONUMENT_COST = 500000000;
-
   const clone = (value) => JSON.parse(JSON.stringify(value));
-
   const getSnapshot = () => {
     if (typeof map === 'undefined' || !Array.isArray(map)) {
       throw new Error('map 変数にアクセスできません。ゲーム画面のコンソールで実行してください。');
     }
-
     return {
       map: clone(map),
       money: typeof money === 'number' ? money : 0,
@@ -34,13 +29,10 @@
       isViewingOtherIsland: typeof isViewingOtherIsland === 'boolean' ? isViewingOtherIsland : false
     };
   };
-
   const setAction = (action) => {
     const actionSelect = document.getElementById(ACTION_SELECT_ID);
     const warshipSubSelect = document.getElementById('warshipSubSelect');
-
     if (!actionSelect) throw new Error('actionSelect が見つかりません。');
-
     const warshipTools = new Set([
       'refuelWarship',
       'resupplyWarshipAmmo',
@@ -50,7 +42,6 @@
       'dispatchWarship',
       'requestWarshipReturn'
     ]);
-
     if (warshipTools.has(action)) {
       actionSelect.value = 'warshipTool';
       if (warshipSubSelect) warshipSubSelect.value = action;
@@ -58,35 +49,28 @@
       actionSelect.value = action;
       if (warshipSubSelect) warshipSubSelect.value = '';
     }
-
     if (typeof window.updateConfirmButton === 'function') {
       window.updateConfirmButton();
     }
   };
-
   const enqueuePlan = ({ action, x = null, y = null, exportAmount = 1, oilFactor = 1, bombardCount = 1 }) => {
     try {
       if (x !== null && y !== null && typeof window.selectTile === 'function') {
         window.selectTile(x, y);
       }
-
       setAction(action);
-
       if (action === 'exportFood') {
         const el = document.getElementById('exportAmount');
         if (el) el.value = String(Math.max(1, exportAmount));
       }
-
       if (action === 'dig') {
         const el = document.getElementById('oilDrillFactor');
         if (el) el.value = String(Math.max(1, oilFactor));
       }
-
       if (action === 'bombard' || action === 'spreadBombard' || action === 'ppBombard') {
         const el = document.getElementById('bombardCount');
         if (el) el.value = String(Math.max(1, bombardCount));
       }
-
       if (typeof window.confirmAction !== 'function') {
         throw new Error('confirmAction 関数が見つかりません。');
       }
@@ -97,7 +81,6 @@
       return false;
     }
   };
-
   const listTiles = (state, pred) => {
     const out = [];
     for (let y = 0; y < state.map.length; y++) {
