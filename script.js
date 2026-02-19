@@ -214,32 +214,6 @@ function checkAndCompleteMission(missionId, pt, foodReward, moneyReward, checkFu
 let myIslandState = null; // 自分の島の状態を保存する変数
 let isViewingOtherIsland = false; // 他の島を見ているかどうかのフラグ
 
-function cloneMapStateForEffects() {
-  return map.map(row => row.map(tile => ({
-    terrain: tile.terrain,
-    facility: tile.facility
-  })));
-}
-
-function collectTurnTileEffects(beforeMap, afterMap) {
-  const effects = [];
-  for (let y = 0; y < SIZE; y++) {
-    for (let x = 0; x < SIZE; x++) {
-      const beforeTile = beforeMap[y][x];
-      const afterTile = afterMap[y][x];
-
-      if (beforeTile.terrain !== 'waste' && afterTile.terrain === 'waste') {
-        effects.push({ x, y, type: 'waste' });
-      }
-
-      if (beforeTile.terrain === 'plain' && beforeTile.facility === null && afterTile.facility !== null) {
-        effects.push({ x, y, type: 'build' });
-      }
-    }
-  }
-  return effects;
-}
-
 function randTerrain() {
   const r = Math.random();
   // 海が生成される確率も加える
@@ -434,8 +408,6 @@ function renderMap() {
     for (let x = 0; x < SIZE; x++) {
       const cell = document.createElement('td');
       const tile = map[y][x];
-      cell.dataset.x = x;
-      cell.dataset.y = y;
 
       // 他の島を見ているときは砲台と防衛施設を森に偽装
       const displayFacility = (isViewingOtherIsland && (tile.facility === 'gun' || tile.facility === 'defenseFacility' || tile.facility === 'Monument')) ? 'forest' : tile.facility;
@@ -1599,7 +1571,6 @@ if (!keepOptionSelected) {
 
 // nextTurn関数をグローバルスコープで定義
 window.nextTurn = function () {
-const mapStateBeforeTurn = cloneMapStateForEffects();
 turn++;
     warships.forEach(warship => {
         if (warship.currentDurability <= 0) return;
@@ -3029,11 +3000,7 @@ if (actualMaintenanceCost > 0) {
   renderActionQueue()
   const populationChange = population - prevPopulation; // 人口の増減を計算
   logAction(`資金収支: ${moneyChange+totalOilRigIncome - actualMaintenanceCost}G, 食料: ${foodChange >= 0 ? '+' : ''}${foodChange}, 人口変化: ${populationChange >= 0 ? '+' : ''}${populationChange}`);
-  const turnTileEffects = collectTurnTileEffects(mapStateBeforeTurn, map);
   renderMap();
-  if (window.playTileEffects) {
-    window.playTileEffects(turnTileEffects);
-  }
 }
 /**
  * 地震・津波の効果を処理する
