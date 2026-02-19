@@ -217,10 +217,7 @@ let isViewingOtherIsland = false; // 他の島を見ているかどうかのフ�
 function cloneMapStateForEffects() {
   return map.map(row => row.map(tile => ({
     terrain: tile.terrain,
-    facility: tile.facility,
-    pop: tile.pop || 0,
-    enhanced: !!tile.enhanced,
-    monumentLevel: tile.MonumentLevel || 0
+    facility: tile.facility
   })));
 }
 
@@ -235,32 +232,8 @@ function collectTurnTileEffects(beforeMap, afterMap) {
         effects.push({ x, y, type: 'waste' });
       }
 
-      if (beforeTile.terrain !== 'sea' && afterTile.terrain === 'sea') {
-        effects.push({ x, y, type: 'waste' });
-      }
-
-      if (beforeTile.terrain === 'waste' && afterTile.terrain === 'plain') {
-        effects.push({ x, y, type: 'green' });
-      }
-
       if (beforeTile.terrain === 'plain' && beforeTile.facility === null && afterTile.facility !== null) {
-        effects.push({ x, y, type: 'green' });
-      }
-
-      if (beforeTile.facility && afterTile.facility && beforeTile.facility !== afterTile.facility) {
-        effects.push({ x, y, type: 'green' });
-      }
-
-      if (!beforeTile.enhanced && afterTile.enhanced) {
-        effects.push({ x, y, type: 'green' });
-      }
-
-      if (beforeTile.facility === 'Monument' && afterTile.facility === 'Monument' && afterTile.monumentLevel > beforeTile.monumentLevel) {
-        effects.push({ x, y, type: 'green' });
-      }
-
-      if (beforeTile.facility === 'house' && afterTile.facility === 'house' && afterTile.pop > beforeTile.pop) {
-        effects.push({ x, y, type: 'yellow' });
+        effects.push({ x, y, type: 'build' });
       }
     }
   }
@@ -1627,7 +1600,6 @@ if (!keepOptionSelected) {
 // nextTurn関数をグローバルスコープで定義
 window.nextTurn = function () {
 const mapStateBeforeTurn = cloneMapStateForEffects();
-const turnTileEffects = [];
 turn++;
     warships.forEach(warship => {
         if (warship.currentDurability <= 0) return;
@@ -3057,10 +3029,10 @@ if (actualMaintenanceCost > 0) {
   renderActionQueue()
   const populationChange = population - prevPopulation; // 人口の増減を計算
   logAction(`資金収支: ${moneyChange+totalOilRigIncome - actualMaintenanceCost}G, 食料: ${foodChange >= 0 ? '+' : ''}${foodChange}, 人口変化: ${populationChange >= 0 ? '+' : ''}${populationChange}`);
-  const mapDiffEffects = collectTurnTileEffects(mapStateBeforeTurn, map);
+  const turnTileEffects = collectTurnTileEffects(mapStateBeforeTurn, map);
   renderMap();
   if (window.playTileEffects) {
-    window.playTileEffects(turnTileEffects.concat(mapDiffEffects));
+    window.playTileEffects(turnTileEffects);
   }
 }
 /**

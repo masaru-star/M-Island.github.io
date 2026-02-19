@@ -1,19 +1,14 @@
 (function () {
-  const EFFECT_CLASS_MAP = {
-    waste: 'tile-flash-waste',
-    green: 'tile-flash-green',
-    blue: 'tile-flash-blue',
-    yellow: 'tile-flash-yellow'
-  };
+  const RED_CLASS = 'tile-flash-waste';
+  const GREEN_CLASS = 'tile-flash-build';
 
   function applyEffectToCell(effect) {
     const cell = document.querySelector(`#map td[data-x="${effect.x}"][data-y="${effect.y}"]`);
     if (!cell) return;
 
-    const className = EFFECT_CLASS_MAP[effect.type];
-    if (!className) return;
-
+    const className = effect.type === 'waste' ? RED_CLASS : GREEN_CLASS;
     cell.classList.remove(className);
+    // リフローでアニメーションを確実に再実行
     void cell.offsetWidth;
     cell.classList.add(className);
 
