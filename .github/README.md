@@ -3,6 +3,11 @@
 
 ![Progress](https://img.shields.io/badge/Japanese-100%25-green) ![Progress](https://img.shields.io/badge/English-5%25-orange) ![Progress](https://img.shields.io/badge/German-0%25-red) ![Progress](https://img.shields.io/badge/Chinese-0%25-red) ![Progress](https://img.shields.io/badge/Korean-0%25-red) ![Progress](https://img.shields.io/badge/Spanish-0%25-red)
 
+## Please cooperate with our survey
+If you enter your GitHub username in the free text field, we'll add it to the contributor list.
+
+[Click here for the survey](https://docs.google.com/forms/d/e/1FAIpQLSfQbRL926EcXjSShoP-p6uQYG5tqiP5CFijHzJE3qK3sY3wHA/viewform?usp=dialog)
+
 ## Overview
 This is a management simulation game in which you take on the role of island governor and develop your island by shaping the terrain, constructing facilities, and increasing the population.<br>
 Interact with other islands, battle monsters that suddenly appear, and overcome numerous disasters as you build your own ideal island.
