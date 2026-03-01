@@ -3164,6 +3164,65 @@ function getMonumentLevel() {
     }
     return 0;
 }
+
+/**
+ * 条件に合うタイルに計画を一括登録する関数
+ * @param {string} action - 計画するアクションID (例: 'enhanceFacility', 'flatten', 'dig')
+ * @param {string} targetTerrain - 対象の地形ID (例: 'plain', 'forest', 'waste')
+ * @param {string|null} targetFacility - 対象の施設ID (例: 'farm', 'factory', なしの場合は null)
+ */
+function addBulkPlans(action, targetTerrain, targetFacility) {
+    // 他の島を表示中は実行不可にする
+    if (typeof isViewingOtherIsland !== 'undefined' && isViewingOtherIsland) {
+        logAction("他の島の表示中は計画を追加できません。");
+        return;
+    }
+    const MAX_QUEUE_SIZE = 20; // 計画キューの最大値
+    let addedCount = 0;
+    const keepOption = document.getElementById('keepOptionSelected')?.checked || false;
+    // マップ全体(16x16)をループ
+    for (let y = 0; y < SIZE; y++) {
+        for (let x = 0; x < SIZE; x++) {
+            // キューが上限に達していたら終了
+            if (actionQueue.length >= MAX_QUEUE_SIZE) {
+                logAction("計画キューが上限（20件）に達したため、一括登録を終了します。");
+                finalizeBulkAction(addedCount);
+                return;
+            }
+            const tile = map[y][x];
+            // 地形と施設が引数と一致するか判定
+            if (tile.terrain === targetTerrain && tile.facility === targetFacility) {
+                // 計画をキューに追加
+                actionQueue.push({ 
+                    x: x, 
+                    y: y, 
+                    action: action, 
+                    keepSelected: keepOption 
+                });
+
+                // ログ表示（既存の関数を利用）
+                const actionInfo = getActionName(action, x, y);
+                logAction(`(${x},${y}) に ${actionInfo.name} を計画しました`);
+                addedCount++;
+            }
+        }
+    }
+    if (addedCount === 0) {
+        logAction("条件に一致するタイルが見つかりませんでした。");
+    } else {
+        finalizeBulkAction(addedCount);
+    }
+    // UI更新とセーブ
+    function finalizeBulkAction(count) {
+        renderActionQueue(); // 計画リストの表示更新
+        updateConfirmButton(); // UI状態の更新
+        if (typeof saveMyIslandState === 'function') {
+            saveMyIslandState(); // 状態を保存
+        }
+        logAction(`一括登録完了: 合計 ${count} 件の計画を追加しました。`);
+    }
+}
+
 // セーブ機能
 window.saveGame = function() {
     islandName = document.getElementById('islandNameInput').value; // UIから名前を取得
@@ -3261,7 +3320,6 @@ window.loadGame = function() {
         console.error(e);
     }
 }
-
 // 初期化時に自分の島の状態をロード（または初期化）する　
 window.onload = function() {
     loadMyIslandState(); // まず自分の島をロード/初期化

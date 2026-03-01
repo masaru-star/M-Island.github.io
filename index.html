@@ -124,7 +124,13 @@ SOFTWARE. -->
   <option value="decommissionWarship" data-myisland="true">軍艦除籍</option>
   <option value="dispatchWarship" data-myisland="true">軍艦派遣</option>
   <option value="requestWarshipReturn" data-myisland="true">軍艦帰還要請</option>
-</select>
+</select><!-- <select id="AutocommandSubSelect" onchange="updateConfirmButton()" style="width: 140px; display: none;">
+  <option value="">自動送信ツールを選択</option>
+  <option value="autoflatten" data-myisland="true">整地自動送信</option>
+  <option value="autofarm" data-myisland="true">農場整備自動送信</option>
+  <option value="autofactory" data-myisland="true">工場建設自動送信</option>
+  <option value="autolandfill" data-myisland="true">埋め立て自動送信</option>
+</select> -->
 <input type="number" id="exportAmount" placeholder="輸出数" min="1" style="width: 60px; display: none;">
 <input type="number" id="bombardCount" placeholder="攻撃数" min="1" style="width: 60px; display: none;">
 <input type="number" id="refuelAmount" placeholder="補給数" min="1" style="width: 60px; display: none;">
